@@ -10,7 +10,7 @@ services:
       - POSTGRES_HOST=localhost
       - POSTGRES_USER=root3
       - POSTGRES_PASSWORD=root2
-      - POSTGRES_DATABASE=root1
+      - POSTGRES_DB=root1
     command: postgres
     restart: always
 
