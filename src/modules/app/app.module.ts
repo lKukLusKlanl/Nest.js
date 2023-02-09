@@ -1,20 +1,23 @@
 import { Module } from '@nestjs/common';
-import { UserModule } from 'src/users/users.module';
+import { UserModule } from 'src/modules/users/users.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import configurations from 'src/configurations';
+import { User } from '../users/models/user.model';
+import { AuthModule } from '../auth/auth.module';
+import { TokenModule } from '../token/token.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
     isGlobal: true,
     load: [configurations]
-  }), 
+  }),
   SequelizeModule.forRootAsync({
     imports: [ConfigModule],
     inject: [ConfigService],
-    useFactory: (configService: ConfigService)=>({
+    useFactory: (configService: ConfigService) => ({
       dialect: "postgres",
       host: configService.get("db_host"),
       port: configService.get("db_port"),
@@ -23,11 +26,15 @@ import configurations from 'src/configurations';
       username: configService.get("db_username"),
       synchronize: true,
       autoLoadModels: true,
-      models: []
+      models: [User]
+
     })
   }),
-  UserModule],
+    UserModule,
+    AuthModule,
+    TokenModule
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
