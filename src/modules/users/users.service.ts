@@ -4,6 +4,7 @@ import { User } from './models/user.model';
 import * as bcrypt from 'bcrypt'
 import { createUserDTO, UpdateUserDTO } from './dto';
 import { AppError } from 'src/common/constants/errors';
+import { Watchlist } from '../watchlist/models/watchlist.model';
 
 @Injectable()
 export class UserService {
@@ -37,16 +38,20 @@ export class UserService {
     return dto
   }
   async publicUser(email: string) {
-    return this.userRepoitory.findOne({
+    return await this.userRepoitory.findOne({
       where: { email },
-      attributes: { exclude: ['password'] }
+      attributes: { exclude: ['password'] },
+      include: {
+        model: Watchlist,
+        required: false
+      }
     })
   }
   async updateUser(email: string, dto:UpdateUserDTO): Promise<UpdateUserDTO>{
     await this.userRepoitory.update(dto, {where: {email}})
     return dto
   }
-  async deleteUser (email: string){
+  async deleteUser (email: string): Promise<boolean>{
     await this.userRepoitory.destroy({where:{email}})
     return true
   }
